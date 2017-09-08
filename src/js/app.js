@@ -54,7 +54,7 @@ App = {
             var adoptionInstance;
             web3.eth.getBlock('latest', function(error, result) {
                 console.log("result = " + JSON.stringify(result));
-                lastblock = result.number + 1;
+                lastblock = result.number;
                 console.log("latest block: " + JSON.stringify(lastblock));
 
                 App.contracts.Adoption.deployed().then(function(instance) {
@@ -77,10 +77,10 @@ App = {
         $(document).on('click', '.btn-rename', App.handleRename);
     },
 
-    handleAdopt: function() {
-        event.preventDefault();
+    handleAdopt: function(e) {
+        App.stopEvent(e);
 
-        var petId = parseInt($(event.target).data('id'));
+        var petId = parseInt($(e.target).data('id'));
 
 		var adoptionInstance;
 
@@ -121,10 +121,10 @@ App = {
 		});
     },
 
-    handleRename: function() {
-        event.preventDefault();
+    handleRename: function(e) {
+        App.stopEvent(e);
 
-        var petId = parseInt($(event.target).data('id'));
+        var petId = parseInt($(e.target).data('id'));
 
         var $namebox = $('.panel-pet').eq(petId).find('.txt-rename');
 		var newName = $namebox.val();
@@ -183,8 +183,19 @@ App = {
 		}).catch(function(err) {
 			console.log("Error while marking renamed: " + err.message);
 		});
-    }
+    },
 
+    stopEvent: function(e) {
+        //from https://stackoverflow.com/questions/4585970/jquery-event-preventdefault-not-working-in-firefox-jsfiddle-included
+        if(e.preventDefault) {
+            e.preventDefault();
+        } else{
+            e.stop();
+        };
+
+        e.returnValue = false;
+        e.stopPropagation();        
+    } 
 };
 
 $(function() {
